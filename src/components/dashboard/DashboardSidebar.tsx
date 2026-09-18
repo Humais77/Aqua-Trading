@@ -4,7 +4,6 @@ import Link from "next/link";
 import {
   AppWindow,
   BarChart3,
-  ChevronLeft,
   CircleDollarSign,
   Clock3,
   Gift,
@@ -14,8 +13,6 @@ import {
   Medal,
   ReceiptText,
   Send,
-  Settings2,
-  ShieldCheck,
   Trophy,
   UserCheck,
   Users,
@@ -115,81 +112,44 @@ export default function DashboardSidebar({
       {/* Mobile backdrop */}
       {open && (
         <button
+          type="button"
           aria-label="Close sidebar"
           onClick={() => setOpen(false)}
-          className="fixed inset-0 z-40 bg-black/30 lg:hidden"
+          className="fixed inset-0 z-[65] bg-black/30 lg:hidden"
         />
       )}
 
       <aside
-        className={`fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-pink-100 bg-white shadow-[5px_0_25px_rgba(237,19,133,0.06)] transition-all duration-300 ${
-          open
-            ? "w-[250px]"
-            : "w-[78px]"
-        } ${
-          open
-            ? "translate-x-0"
-            : "-translate-x-full lg:translate-x-0"
-        }`}
+        className={`
+          fixed left-0 top-[78px] z-[70]
+          h-[calc(100vh-78px)]
+          w-[164px]
+          border-r border-pink-100
+          bg-white
+          shadow-[4px_0_18px_rgba(237,19,133,0.06)]
+          transition-transform duration-300
+
+          ${open ? "translate-x-0" : "-translate-x-full"}
+          lg:translate-x-0
+        `}
       >
-        {/* Logo */}
-        <div className="flex h-[78px] items-center border-b border-pink-100 px-4">
-          {open ? (
-            <Link
-              href="/dashboard"
-              className="flex items-center gap-3"
-            >
-              <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-[#ed1385] text-[#ed1385]">
-                <TrendingIcon />
-              </div>
-
-              <div>
-                <div className="text-[17px] font-black text-slate-900">
-                  AQUA
-                  <span className="text-[#ed1385]">
-                    TRADING
-                  </span>
-                </div>
-
-                <div className="text-[7px] font-bold tracking-[1.5px] text-slate-400">
-                  INVEST. GROW. EMPOWER.
-                </div>
-              </div>
-            </Link>
-          ) : (
-            <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full border-2 border-[#ed1385] text-[#ed1385]">
-              <TrendingIcon />
-            </div>
-          )}
-
+        {/* Mobile close */}
+        <div className="flex h-12 items-center justify-end px-3 lg:hidden">
           <button
-            onClick={() => setOpen(!open)}
-            className="ml-auto hidden rounded-lg p-2 text-slate-400 hover:bg-pink-50 hover:text-[#ed1385] lg:block"
-          >
-            <ChevronLeft
-              size={18}
-              className={`transition-transform ${
-                !open ? "rotate-180" : ""
-              }`}
-            />
-          </button>
-
-          <button
+            type="button"
             onClick={() => setOpen(false)}
-            className="ml-auto rounded-lg p-2 text-slate-400 hover:bg-pink-50 hover:text-[#ed1385] lg:hidden"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-pink-50 hover:text-[#ed1385]"
           >
             <X size={18} />
           </button>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto px-3 py-5">
+        <nav className="h-full overflow-y-auto px-2 py-3 scrollbar-thin scrollbar-thumb-pink-200">
           <div className="space-y-1">
             {menuItems.map((item) => {
               const Icon = item.icon;
-
-              const active =
-                item.href === "/dashboard";
+              const active = item.href === "/dashboard";
 
               return (
                 <Link
@@ -200,76 +160,56 @@ export default function DashboardSidebar({
                       setOpen(false);
                     }
                   }}
-                  className={`group flex items-center gap-3 rounded-xl px-3 py-3 transition ${
-                    active
-                      ? "bg-[#ed1385] text-white shadow-[0_6px_15px_rgba(237,19,133,0.22)]"
-                      : "text-slate-500 hover:bg-pink-50 hover:text-[#ed1385]"
-                  }`}
+                  className={`
+                    group flex min-h-[42px] items-center gap-3
+                    rounded-[10px] px-3
+                    transition-all duration-200
+
+                    ${
+                      active
+                        ? "bg-gradient-to-r from-[#ff1590] to-[#ed1385] text-white shadow-[0_5px_12px_rgba(237,19,133,0.25)]"
+                        : "text-slate-500 hover:bg-pink-50 hover:text-[#ed1385]"
+                    }
+                  `}
                 >
                   <Icon
                     size={18}
+                    strokeWidth={2.5}
                     className="shrink-0"
                   />
 
-                  {open && (
-                    <span className="text-[11px] font-semibold">
-                      {item.label}
-                    </span>
-                  )}
+                  <span className="whitespace-nowrap text-[10px] font-semibold">
+                    {item.label}
+                  </span>
                 </Link>
               );
             })}
           </div>
-        </nav>
 
-        {/* Logout */}
-        <div className="border-t border-pink-100 p-3">
-          <button
-            onClick={async () => {
-              await fetch(
-                "/api/auth/logout",
-                {
-                  method: "POST",
+          {/* Sidebar Logout */}
+          <div className="mt-3 border-t border-pink-100 pt-3">
+            <button
+              type="button"
+              onClick={async () => {
+                try {
+                  await fetch("/api/auth/logout", {
+                    method: "POST",
+                  });
+                } finally {
+                  window.location.href = "/login";
                 }
-              );
+              }}
+              className="flex w-full items-center gap-3 rounded-[10px] px-3 py-3 text-red-500 transition hover:bg-red-50"
+            >
+              <LogOut size={18} />
 
-              window.location.href = "/login";
-            }}
-            className={`flex w-full items-center gap-3 rounded-xl px-3 py-3 text-red-500 transition hover:bg-red-50 ${
-              !open ? "justify-center" : ""
-            }`}
-          >
-            <LogOut size={18} />
-
-            {open && (
-              <span className="text-[11px] font-semibold">
+              <span className="text-[10px] font-semibold">
                 Logout
               </span>
-            )}
-          </button>
-        </div>
+            </button>
+          </div>
+        </nav>
       </aside>
     </>
-  );
-}
-
-function TrendingIcon() {
-  return (
-    <svg
-      width="21"
-      height="21"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.4"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M3 3v18h18" />
-      <path d="M7 15v-3" />
-      <path d="M11 15V9" />
-      <path d="M15 15V6" />
-      <path d="m7 12 4-4 4 2 4-6" />
-    </svg>
   );
 }
