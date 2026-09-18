@@ -18,17 +18,64 @@ import {
   Headset,
   Heart,
 } from "lucide-react";
-
+import { useRouter } from "next/navigation";
 export default function RegisterPage() {
-  const [showPassword, setShowPassword] = useState(false);
+   const [showPassword, setShowPassword] = useState(false);
+  const [name, setName] = useState("");
+const [username, setUsername] = useState("");
+const [email, setEmail] = useState("");
+const [password, setPassword] = useState("");
+const [referralCode, setReferralCode] = useState("");
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+const [error, setError] = useState("");
+const [loading, setLoading] = useState(false);
 
-    alert(
-      "Demo registration — account creation will be connected in the next phase."
+const router = useRouter();
+
+  const handleSubmit = async (
+  event: FormEvent<HTMLFormElement>
+) => {
+  event.preventDefault();
+
+  setError("");
+  setLoading(true);
+
+  try {
+    const response = await fetch(
+      "/api/auth/register",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          username,
+          email,
+          password,
+          referralCode,
+        }),
+      }
     );
-  };
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      setError(
+        data.message || "Unable to create account."
+      );
+      return;
+    }
+
+    router.push("/login?registered=true");
+  } catch {
+    setError(
+      "Unable to connect to the server."
+    );
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <main className="relative min-h-screen w-full overflow-hidden bg-white font-sans text-slate-800">
@@ -217,9 +264,29 @@ export default function RegisterPage() {
                 onSubmit={handleSubmit}
                 className="mt-5 space-y-4"
               >
-                {/* =================================================
-                    FULL NAME
-                ================================================== */}
+                <div>
+  <div className="relative">
+    <User
+      size={16}
+      className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+    />
+
+    <input
+      required
+      type="text"
+      value={username}
+      onChange={(event) =>
+        setUsername(event.target.value)
+      }
+      placeholder="Choose a username"
+      className="h-[47px] w-full rounded-full border border-slate-200 bg-white px-10 text-[10px] font-semibold text-slate-800 shadow-[0_2px_8px_rgba(15,23,42,0.03)] outline-none transition placeholder:text-slate-400 focus:border-[#ed1385] focus:ring-2 focus:ring-pink-100"
+    />
+  </div>
+
+  <p className="mt-1.5 pl-4 text-[7px] font-medium text-slate-400">
+    Letters, numbers and underscores only.
+  </p>
+</div>
 
                 <div>
                   <div className="relative">
@@ -230,8 +297,12 @@ export default function RegisterPage() {
 
                     <input
                       required
-                      type="text"
-                      placeholder="Your full name"
+  type="text"
+  value={name}
+  onChange={(event) =>
+    setName(event.target.value)
+  }
+  placeholder="Your full name"
                       className="h-[47px] w-full rounded-full border border-slate-200 bg-white px-10 text-[10px] font-semibold text-slate-800 shadow-[0_2px_8px_rgba(15,23,42,0.03)] outline-none transition placeholder:text-slate-400 focus:border-[#ed1385] focus:ring-2 focus:ring-pink-100"
                     />
                   </div>
@@ -253,9 +324,13 @@ export default function RegisterPage() {
                     />
 
                     <input
-                      required
-                      type="email"
-                      placeholder="you@example.com"
+                       required
+  type="email"
+  value={email}
+  onChange={(event) =>
+    setEmail(event.target.value)
+  }
+  placeholder="you@example.com"
                       className="h-[47px] w-full rounded-full border border-slate-200 bg-white px-10 text-[10px] font-semibold text-slate-800 shadow-[0_2px_8px_rgba(15,23,42,0.03)] outline-none transition placeholder:text-slate-400 focus:border-[#ed1385] focus:ring-2 focus:ring-pink-100"
                     />
                   </div>
@@ -278,12 +353,12 @@ export default function RegisterPage() {
 
                     <input
                       required
-                      type={
-                        showPassword
-                          ? "text"
-                          : "password"
-                      }
-                      placeholder="Create a password"
+  type={showPassword ? "text" : "password"}
+  value={password}
+  onChange={(event) =>
+    setPassword(event.target.value)
+  }
+  placeholder="Create a password"
                       className="h-[47px] w-full rounded-full border border-slate-200 bg-white px-10 pr-11 text-[10px] font-semibold text-slate-800 shadow-[0_2px_8px_rgba(15,23,42,0.03)] outline-none transition placeholder:text-slate-400 focus:border-[#ed1385] focus:ring-2 focus:ring-pink-100"
                     />
 
@@ -326,8 +401,12 @@ export default function RegisterPage() {
                     />
 
                     <input
-                      type="text"
-                      placeholder="Enter referral code"
+                     type="text"
+  value={referralCode}
+  onChange={(event) =>
+    setReferralCode(event.target.value)
+  }
+  placeholder="Enter referral code"
                       className="h-[47px] w-full rounded-full border border-slate-200 bg-white px-10 text-[10px] font-semibold text-slate-800 shadow-[0_2px_8px_rgba(15,23,42,0.03)] outline-none transition placeholder:text-slate-400 focus:border-[#ed1385] focus:ring-2 focus:ring-pink-100"
                     />
                   </div>
@@ -336,6 +415,11 @@ export default function RegisterPage() {
                     Referral code is optional.
                   </p>
                 </div>
+                {error && (
+  <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-center text-[9px] font-semibold text-red-600">
+    {error}
+  </div>
+)}
 
                 {/* =================================================
                     CREATE ACCOUNT BUTTON

@@ -17,19 +17,57 @@ import {
   Headset,
   Heart,
 } from "lucide-react";
-
+import { useRouter } from "next/navigation";
 const PINK = "#ed1385";
 
 export default function LoginPage() {
-  const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+const [showPassword, setShowPassword] = useState(false);
+const [identifier, setIdentifier] = useState("");
+const [password, setPassword] = useState("");
+const [error, setError] = useState("");
+const [loading, setLoading] = useState(false);
 
-    alert(
-      "Demo login — authentication will be connected in the next phase."
+  const handleSubmit = async (
+  event: FormEvent<HTMLFormElement>
+) => {
+  event.preventDefault();
+
+  setError("");
+  setLoading(true);
+
+  try {
+    const response = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        identifier,
+        password,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      setError(
+        data.message || "Unable to login."
+      );
+      return;
+    }
+
+    router.push("/dashboard");
+    router.refresh();
+  } catch {
+    setError(
+      "Unable to connect to the server."
     );
-  };
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <main className="relative min-h-screen w-full overflow-hidden bg-white font-sans text-slate-800">
@@ -239,11 +277,15 @@ export default function LoginPage() {
                     />
 
                     <input
-                      required
-                      type="text"
-                      placeholder="Enter your username or email"
-                      className="h-[47px] w-full rounded-full border border-slate-200 bg-white px-10 text-[10px] font-semibold text-slate-800 shadow-[0_2px_8px_rgba(15,23,42,0.03)] outline-none transition placeholder:text-slate-400 focus:border-[#ed1385] focus:ring-2 focus:ring-pink-100"
-                    />
+  required
+  type="text"
+  value={identifier}
+  onChange={(event) =>
+    setIdentifier(event.target.value)
+  }
+  placeholder="Enter your username or email"
+  className="h-[47px] w-full rounded-full border border-slate-200 bg-white px-10 text-[10px] font-semibold text-slate-800 shadow-[0_2px_8px_rgba(15,23,42,0.03)] outline-none transition placeholder:text-slate-400 focus:border-[#ed1385] focus:ring-2 focus:ring-pink-100"
+/>
                   </div>
 
                   <p className="mt-1.5 pl-4 text-[7px] font-medium text-slate-400">
@@ -260,15 +302,15 @@ export default function LoginPage() {
                     />
 
                     <input
-                      required
-                      type={
-                        showPassword
-                          ? "text"
-                          : "password"
-                      }
-                      placeholder="Enter your password"
-                      className="h-[47px] w-full rounded-full border border-slate-200 bg-white px-10 pr-11 text-[10px] font-semibold text-slate-800 shadow-[0_2px_8px_rgba(15,23,42,0.03)] outline-none transition placeholder:text-slate-400 focus:border-[#ed1385] focus:ring-2 focus:ring-pink-100"
-                    />
+  required
+  type={showPassword ? "text" : "password"}
+  value={password}
+  onChange={(event) =>
+    setPassword(event.target.value)
+  }
+  placeholder="Enter your password"
+  className="h-[47px] w-full rounded-full border border-slate-200 bg-white px-10 pr-11 text-[10px] font-semibold text-slate-800 shadow-[0_2px_8px_rgba(15,23,42,0.03)] outline-none transition placeholder:text-slate-400 focus:border-[#ed1385] focus:ring-2 focus:ring-pink-100"
+/>
 
                     <button
                       type="button"
@@ -299,16 +341,26 @@ export default function LoginPage() {
 
                 {/* Login */}
                 <button
-                  type="submit"
-                  className="group flex h-[49px] w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#ff28a0] to-[#ed0072] text-[14px] font-black text-white shadow-[0_7px_18px_rgba(237,19,133,0.28)] transition hover:-translate-y-[1px] hover:shadow-[0_10px_22px_rgba(237,19,133,0.34)] active:translate-y-0"
-                >
-                  <span>Login Now</span>
+  type="submit"
+  disabled={loading}
+  className="group flex h-[49px] w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#ff28a0] to-[#ed0072] text-[14px] font-black text-white shadow-[0_7px_18px_rgba(237,19,133,0.28)] transition hover:-translate-y-[1px] disabled:cursor-not-allowed disabled:opacity-60"
+>
+  <span>
+    {loading ? "Logging in..." : "Login Now"}
+  </span>
 
-                  <ArrowRight
-                    size={17}
-                    className="transition-transform group-hover:translate-x-1"
-                  />
-                </button>
+  {!loading && (
+    <ArrowRight
+      size={17}
+      className="transition-transform group-hover:translate-x-1"
+    />
+  )}
+</button>
+                {error && (
+  <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-center text-[9px] font-semibold text-red-600">
+    {error}
+  </div>
+)}
               </form>
 
               {/* Divider */}

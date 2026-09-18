@@ -1,0 +1,28 @@
+// use prisma-next
+model User {
+  id           Uuid     @id @default(uuid())
+  fullName     String
+  username     String   @unique
+  email        String   @unique
+  passwordHash String
+  referralCode String   @unique
+  referredById Uuid?
+  balance Decimal @default("0")
+  profileImage String?
+  role         UserRole @default(USER)
+  isVerified   Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+
+  referredBy   User?    @relation("UserReferrals", fields:[referredById], references:[id])
+  referrals    User[]   @relation("UserReferrals")
+
+  @@index([referredById])
+}
+
+enum UserRole {
+  @@type("pg/text@1")
+
+  USER
+  ADMIN
+}

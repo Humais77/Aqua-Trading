@@ -13,7 +13,8 @@ export default function LayoutContent({
 
   const isAuthPage =
     pathname === "/login" ||
-    pathname === "/register";
+    pathname === "/register" || pathname === '/dashboard';
+    
 
   return (
     <>
