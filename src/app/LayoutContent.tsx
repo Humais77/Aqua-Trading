@@ -13,16 +13,17 @@ export default function LayoutContent({
 
   const isAuthPage =
     pathname === "/login" ||
-    pathname === "/register" || pathname === '/dashboard';
-    
+    pathname === "/register";
+
+  const isDashboard = pathname.startsWith("/dashboard");
+
+  const hideChrome = isAuthPage || isDashboard;
 
   return (
     <>
-      {!isAuthPage && <Navbar />}
-
+      {!hideChrome && <Navbar />}
       <main>{children}</main>
-
-      {!isAuthPage && <Footer />}
+      {!hideChrome && <Footer />}
     </>
   );
 }

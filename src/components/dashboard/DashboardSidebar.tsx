@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   AppWindow,
   BarChart3,
@@ -33,7 +34,7 @@ const menuItems = [
   },
   {
     label: "Invest Plan",
-    href: "#",
+    href: "/dashboard/plans",
     icon: BarChart3,
   },
   {
@@ -107,6 +108,7 @@ export default function DashboardSidebar({
   open,
   setOpen,
 }: Props) {
+  const pathname = usePathname();
   return (
     <>
       {/* Mobile backdrop */}
@@ -149,7 +151,10 @@ export default function DashboardSidebar({
           <div className="space-y-1">
             {menuItems.map((item) => {
               const Icon = item.icon;
-              const active = item.href === "/dashboard";
+              const active =
+  item.href === "/dashboard"
+    ? pathname === "/dashboard"
+    : pathname.startsWith(item.href);
 
               return (
                 <Link
