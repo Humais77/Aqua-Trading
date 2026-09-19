@@ -44,7 +44,7 @@ const menuItems = [
   },
   {
     label: "Deposit",
-    href: "#",
+    href: "/dashboard/deposit",
     icon: Wallet,
   },
   {

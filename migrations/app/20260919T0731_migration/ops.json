@@ -1,0 +1,203 @@
+[
+  {
+    "id": "table.deposit",
+    "label": "Create table \"deposit\"",
+    "summary": "Creates table \"deposit\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "deposit"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"deposit\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"deposit\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"deposit\"",
+        "sql": "CREATE TABLE \"public\".\"deposit\" (\n  \"amount\" numeric NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" uuid NOT NULL,\n  \"method\" text NOT NULL,\n  \"reference\" text NOT NULL,\n  \"status\" text DEFAULT 'PENDING' NOT NULL,\n  \"updatedAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"userId\" uuid NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"deposit_method_check_5c8e9670\" CHECK (\"method\" IN ('BANK_TRANSFER', 'EASYPAISA', 'JAZZCASH', 'RAAST')),\n  CONSTRAINT \"deposit_status_check_56005a61\" CHECK (\"status\" IN ('PENDING', 'APPROVED', 'REJECTED'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"deposit\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"deposit\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.deposit.deposit_reference_key",
+    "label": "Add unique constraint on \"deposit\" (reference)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "deposit_reference_key",
+        "table": "deposit"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"deposit_reference_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "deposit_reference_key",
+          "public",
+          "\"public\".\"deposit\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"deposit_reference_key\"",
+        "sql": "ALTER TABLE \"public\".\"deposit\" ADD CONSTRAINT \"deposit_reference_key\" UNIQUE (\"reference\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"deposit_reference_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "deposit_reference_key",
+          "public",
+          "\"public\".\"deposit\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.deposit.deposit_status_idx_e98638ab",
+    "label": "Create index \"deposit_status_idx_e98638ab\" on \"deposit\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "deposit_status_idx_e98638ab",
+        "table": "deposit"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"deposit_status_idx_e98638ab\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"deposit_status_idx_e98638ab\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"deposit_status_idx_e98638ab\"",
+        "sql": "CREATE INDEX \"deposit_status_idx_e98638ab\" ON \"public\".\"deposit\" (\"status\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"deposit_status_idx_e98638ab\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"deposit_status_idx_e98638ab\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.deposit.deposit_userId_idx_a489d58a",
+    "label": "Create index \"deposit_userId_idx_a489d58a\" on \"deposit\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "deposit_userId_idx_a489d58a",
+        "table": "deposit"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"deposit_userId_idx_a489d58a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"deposit_userId_idx_a489d58a\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"deposit_userId_idx_a489d58a\"",
+        "sql": "CREATE INDEX \"deposit_userId_idx_a489d58a\" ON \"public\".\"deposit\" (\"userId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"deposit_userId_idx_a489d58a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"deposit_userId_idx_a489d58a\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.deposit.deposit_userId_fkey",
+    "label": "Add foreign key \"deposit_userId_fkey\" on \"deposit\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "deposit_userId_fkey",
+        "table": "deposit"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"deposit_userId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "deposit_userId_fkey",
+          "public",
+          "\"public\".\"deposit\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"deposit_userId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"deposit\"\nADD CONSTRAINT \"deposit_userId_fkey\"\nFOREIGN KEY (\"userId\")\nREFERENCES \"public\".\"user\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"deposit_userId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "deposit_userId_fkey",
+          "public",
+          "\"public\".\"deposit\""
+        ]
+      }
+    ]
+  }
+]

@@ -7,15 +7,16 @@ model User {
   passwordHash String
   referralCode String   @unique
   referredById Uuid?
-  balance Decimal @default("0")
+  balance      Decimal  @default("0")
   profileImage String?
   role         UserRole @default(USER)
   isVerified   Boolean  @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @default(now())
 
-  referredBy   User?    @relation("UserReferrals", fields:[referredById], references:[id])
+  referredBy   User?    @relation("UserReferrals", fields: [referredById], references: [id])
   referrals    User[]   @relation("UserReferrals")
+  deposits     Deposit[]
 
   @@index([referredById])
 }
@@ -25,4 +26,37 @@ enum UserRole {
 
   USER
   ADMIN
+}
+
+model Deposit {
+  id            Uuid          @id @default(uuid())
+  userId        Uuid
+  amount        Decimal
+  method        DepositMethod
+  reference     String        @unique
+  status        DepositStatus @default(PENDING)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+}
+
+enum DepositMethod {
+  @@type("pg/text@1")
+
+  BANK_TRANSFER
+  EASYPAISA
+  JAZZCASH
+  RAAST
+}
+
+enum DepositStatus {
+  @@type("pg/text@1")
+
+  PENDING
+  APPROVED
+  REJECTED
 }
