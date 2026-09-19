@@ -86,7 +86,7 @@ export async function POST(request: Request) {
           method: deposit.method,
           reference: deposit.reference,
           status: deposit.status,
-          createdAt: deposit.createdAt,
+          createdAt: deposit.createdAt.toString(),
         },
       },
       {

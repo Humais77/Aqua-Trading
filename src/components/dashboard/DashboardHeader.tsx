@@ -73,7 +73,7 @@ export default function DashboardHeader({
                 <span className="text-[#ed1385]">TRADING</span>
               </div>
 
-              <div className="mt-1 text-[6px] font-bold tracking-[1.4px] text-slate-400">
+              <div className="mt-1 text-[10px] font-bold tracking-[1.4px] text-slate-400">
                 INVEST TODAY, GROW TOMORROW
               </div>
             </div>
@@ -97,9 +97,9 @@ export default function DashboardHeader({
           >
             <Bell size={18} />
 
-            <span className="absolute right-0 top-0 flex h-[17px] min-w-[17px] items-center justify-center rounded-full bg-[#ed1385] px-1 text-[8px] font-black text-white">
-              2
-            </span>
+            <span className="absolute right-0 top-0 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[#ed1385] px-1 text-[10px] font-black text-white">
+  2
+</span>
           </button>
 
           {/* Profile */}
@@ -121,11 +121,11 @@ export default function DashboardHeader({
             </div>
 
             <div className="hidden md:block">
-              <p className="text-[7px] font-medium text-slate-400">
+              <p className="text-xs font-medium text-slate-400">
                 Welcome!
               </p>
 
-              <p className="max-w-[100px] truncate text-[11px] font-black text-slate-900">
+              <p className="max-w-[120px] truncate text-sm font-black text-slate-900">
                 {user.fullName}
               </p>
             </div>
@@ -143,11 +143,11 @@ export default function DashboardHeader({
             </div>
 
             <div>
-              <p className="text-[7px] font-semibold text-slate-400">
+              <p className="text-xs font-semibold text-slate-400">
                 Balance
               </p>
 
-              <p className="text-[12px] font-black text-[#ed1385]">
+              <p className="text-sm font-black text-[#ed1385]">
                 Rs {balance.toLocaleString("en-PK", {
                   minimumFractionDigits: 2,
                 })}
@@ -163,7 +163,7 @@ export default function DashboardHeader({
           >
             <Power size={18} strokeWidth={2.5} />
 
-            <span className="hidden text-[9px] font-bold sm:block">
+            <span className="hidden text-sm font-bold sm:block">
               Logout
             </span>
           </button>

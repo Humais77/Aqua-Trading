@@ -39,7 +39,7 @@ export async function GET() {
         method: deposit.method,
         reference: deposit.reference,
         status: deposit.status,
-        createdAt: deposit.createdAt,
+        createdAt: deposit.createdAt.toString(),
       })),
     });
   } catch (error) {

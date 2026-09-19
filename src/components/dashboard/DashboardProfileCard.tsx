@@ -90,23 +90,23 @@ export default function DashboardProfileCard({
 
           {/* User Information */}
           <div className="min-w-0 flex-1">
-            <h2 className="text-[23px] font-black tracking-tight text-slate-900 sm:text-[25px]">
-              {user.username}
-            </h2>
+            <h2 className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">
+  {user.username}
+</h2>
 
-            <p className="mt-1 text-[10px] text-slate-500 sm:text-[11px]">
-              Ref By:
-              <span className="ml-1 font-black text-[#ed1385]">
-                Direct Member
-              </span>
-            </p>
+            <p className="mt-1 text-sm text-slate-500">
+  Ref By:
+  <span className="ml-1 font-black text-[#ed1385]">
+    Direct Member
+  </span>
+</p>
 
             {/* Referral URL */}
             <div className="mt-3 flex min-w-0">
               <div className="flex min-w-0 flex-1 items-center rounded-l-xl border border-pink-100 bg-white px-3 py-2.5">
-                <span className="truncate text-[9px] font-medium text-slate-500 sm:text-[10px]">
-                  {referralLink}
-                </span>
+                <span className="truncate text-xs font-medium text-slate-500 sm:text-sm">
+  {referralLink}
+</span>
               </div>
 
               <button
@@ -122,10 +122,9 @@ export default function DashboardProfileCard({
                 )}
               </button>
             </div>
-
-            <p className="mt-1.5 text-[8px] text-slate-400">
-              Share your link and grow your community
-            </p>
+<p className="mt-1.5 text-xs text-slate-400">
+  Share your link and grow your community
+</p>
           </div>
 
           {/* Member Badge */}
@@ -138,13 +137,12 @@ export default function DashboardProfileCard({
               />
 
               <div>
-                <p className="text-[12px] font-black text-slate-800">
-                  Member
-                </p>
-
-                <p className="text-[7px] font-medium text-[#ed1385]">
-                  Since Sep 2026
-                </p>
+                <p className="text-sm font-black text-slate-800">
+  Member
+</p>
+<p className="text-xs font-medium text-[#ed1385]">
+  Since Sep 2026
+</p>
               </div>
             </div>
           </div>
@@ -161,13 +159,12 @@ export default function DashboardProfileCard({
         </div>
 
         <div className="min-w-0 flex-1">
-          <p className="text-[13px] font-black">
-            Daily Rewards
-          </p>
-
-          <p className="text-[8px] font-medium text-white/75">
-            Open your calendar & collect today&apos;s bonus
-          </p>
+          <p className="text-base font-black">
+  Daily Rewards
+</p>
+<p className="text-xs font-medium text-white/75">
+  Open your calendar & collect today&apos;s bonus
+</p>
         </div>
 
         <span className="pr-1 text-lg">

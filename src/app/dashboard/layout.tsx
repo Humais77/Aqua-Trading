@@ -1,6 +1,7 @@
-import DashboardShell from "@/src/components/dashboard/DashboardShell";
 import { getCurrentUser } from "@/src/lib/auth";
 import { redirect } from "next/navigation";
+
+import DashboardShell from "@/src/components/dashboard/DashboardShell";
 
 export default async function DashboardLayout({
   children,
@@ -11,6 +12,13 @@ export default async function DashboardLayout({
 
   if (!user) {
     redirect("/login");
+  }
+
+  /*
+   * Admins must never enter the normal user dashboard.
+   */
+  if (user.role === "ADMIN") {
+    redirect("/admin/dashboard");
   }
 
   return (

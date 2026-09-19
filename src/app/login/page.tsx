@@ -58,7 +58,7 @@ const [loading, setLoading] = useState(false);
       return;
     }
 
-    router.push("/dashboard");
+    router.push(data.redirectTo);
     router.refresh();
   } catch {
     setError(

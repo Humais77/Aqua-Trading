@@ -122,19 +122,18 @@ export default function DashboardSidebar({
       )}
 
       <aside
-        className={`
-          fixed left-0 top-[78px] z-[70]
-          h-[calc(100vh-78px)]
-          w-[164px]
-          border-r border-pink-100
-          bg-white
-          shadow-[4px_0_18px_rgba(237,19,133,0.06)]
-          transition-transform duration-300
+  className={`
+    fixed left-0 top-[78px] z-[70]
+    h-[calc(100vh-78px)]
+    w-[164px]
+    border-r border-pink-100
+    bg-white
+    shadow-[4px_0_18px_rgba(237,19,133,0.06)]
+    transition-transform duration-300
 
-          ${open ? "translate-x-0" : "-translate-x-full"}
-          lg:translate-x-0
-        `}
-      >
+    ${open ? "translate-x-0" : "-translate-x-full"}
+  `}
+>
         {/* Mobile close */}
         <div className="flex h-12 items-center justify-end px-3 lg:hidden">
           <button
@@ -183,7 +182,7 @@ export default function DashboardSidebar({
                     className="shrink-0"
                   />
 
-                  <span className="whitespace-nowrap text-[10px] font-semibold">
+                  <span className="whitespace-nowrap text-sm font-semibold">
                     {item.label}
                   </span>
                 </Link>
@@ -208,7 +207,7 @@ export default function DashboardSidebar({
             >
               <LogOut size={18} />
 
-              <span className="text-[10px] font-semibold">
+              <span className="text-sm font-semibold">
                 Logout
               </span>
             </button>

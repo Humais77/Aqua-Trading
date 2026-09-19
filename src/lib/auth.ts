@@ -16,11 +16,13 @@ function getSecret() {
 
 type SessionPayload = {
   userId: string;
+  role: "USER" | "ADMIN";
 };
 
-export async function createSession(userId: string) {
+export async function createSession(userId: string, role: "USER" | "ADMIN") {
   const token = await new SignJWT({
     userId,
+    role,
   } satisfies SessionPayload)
     .setProtectedHeader({
       alg: "HS256",
@@ -81,6 +83,20 @@ export async function getCurrentUser() {
   });
 
   if (!user) {
+    return null;
+  }
+
+  return user;
+}
+
+export async function requireAdmin() {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return null;
+  }
+
+  if (user.role !== "ADMIN") {
     return null;
   }
 

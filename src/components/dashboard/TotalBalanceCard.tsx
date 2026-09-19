@@ -25,9 +25,9 @@ export default function TotalBalanceCard({
       <div className="relative z-10">
         {/* Heading */}
         <div className="flex items-center gap-2">
-          <p className="text-[12px] font-bold sm:text-[14px]">
-            Total Balance
-          </p>
+          <p className="text-sm font-bold sm:text-base">
+  Total Balance
+</p>
 
           <button
             type="button"
@@ -43,13 +43,11 @@ export default function TotalBalanceCard({
         </div>
 
         {/* Balance */}
-        <h2 className="mt-2 text-[29px] font-black tracking-tight sm:text-[34px]">
-          {showBalance
-            ? `Rs ${balance.toLocaleString("en-PK", {
-                minimumFractionDigits: 2,
-              })}`
-            : "••••••••"}
-        </h2>
+        <h2 className="mt-2 text-3xl font-black tracking-tight sm:text-4xl">
+  {showBalance
+    ? `Rs ${balance.toLocaleString("en-PK", { minimumFractionDigits: 2 })}`
+    : "••••••••"}
+</h2>
 
         {/* Bottom stats */}
         <div className="mt-5 flex flex-wrap gap-3">
@@ -57,13 +55,13 @@ export default function TotalBalanceCard({
             <TrendingUp size={15} />
 
             <div>
-              <p className="text-[7px] text-white/70">
-                Current Growth
-              </p>
+              <p className="text-xs text-white/70">
+  Current Growth
+</p>
 
-              <p className="text-[10px] font-black">
-                +0.00%
-              </p>
+              <p className="text-sm font-black">
+  +0.00%
+</p>
             </div>
           </div>
 
@@ -71,13 +69,12 @@ export default function TotalBalanceCard({
             <ArrowUpRight size={15} />
 
             <div>
-              <p className="text-[7px] text-white/70">
-                Total Earnings
-              </p>
-
-              <p className="text-[10px] font-black">
-                Rs 0.00
-              </p>
+              <p className="text-xs text-white/70">
+  Total Earnings
+</p>
+<p className="text-sm font-black">
+  Rs 0.00
+</p>
             </div>
           </div>
         </div>

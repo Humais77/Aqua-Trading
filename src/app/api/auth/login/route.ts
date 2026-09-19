@@ -32,7 +32,7 @@ export async function POST(request: Request) {
       email: normalizedIdentifier,
     });
 
-    // If not found, try username
+    // If email was not found, try username
     if (!user) {
       user = await db.orm.public.User.first({
         username: normalizedIdentifier,
@@ -49,6 +49,7 @@ export async function POST(request: Request) {
       );
     }
 
+    // Check password
     const passwordValid = await bcrypt.compare(
       password,
       user.passwordHash
@@ -64,16 +65,25 @@ export async function POST(request: Request) {
       );
     }
 
-    await createSession(user.id);
+    // Create session
+    await createSession(user.id, user.role);
+
+    // Redirect destination based on role
+    const redirectTo =
+      user.role === "ADMIN"
+        ? "/admin/dashboard"
+        : "/dashboard";
 
     return NextResponse.json({
       success: true,
       message: "Login successful.",
+      redirectTo,
       user: {
         id: user.id,
         name: user.fullName,
         username: user.username,
         email: user.email,
+        role: user.role,
       },
     });
   } catch (error) {
