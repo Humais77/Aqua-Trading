@@ -1,5 +1,17 @@
 import { z } from "zod";
 
+const normalizeUsername = (value: string) =>
+  value.trim().toLowerCase();
+
+const normalizeEmail = (value: string) =>
+  value.trim().toLowerCase();
+
+const normalizeName = (value: string) =>
+  value.trim().replace(/\s+/g, " ");
+
+const normalizeReferralCode = (value: string) =>
+  value.trim().toUpperCase();
+
 export const loginSchema = z.object({
   identifier: z
     .string()
@@ -14,34 +26,51 @@ export const loginSchema = z.object({
 export const registerSchema = z.object({
   name: z
     .string()
-    .trim()
-    .min(2, "Name must be at least 2 characters")
-    .max(80),
+    .transform(normalizeName)
+    .pipe(
+      z
+        .string()
+        .min(2, "Full name must be at least 2 characters.")
+        .max(80, "Full name is too long.")
+    ),
 
   username: z
     .string()
-    .trim()
-    .min(3, "Username must be at least 3 characters")
-    .max(30)
-    .regex(
-      /^[a-zA-Z0-9_]+$/,
-      "Username can only contain letters, numbers and underscores"
+    .transform(normalizeUsername)
+    .pipe(
+      z
+        .string()
+        .min(3, "Username must be at least 3 characters.")
+        .max(30, "Username must be 30 characters or less.")
+        .regex(
+          /^[a-z0-9_]+$/,
+          "Username can only contain letters, numbers and underscores."
+        )
     ),
 
   email: z
     .string()
-    .trim()
-    .email("Please enter a valid email"),
+    .transform(normalizeEmail)
+    .pipe(
+      z
+        .string()
+        .email("Please enter a valid email address.")
+    ),
 
   password: z
     .string()
-    .min(8, "Password must be at least 8 characters")
-    .max(72),
+    .min(8, "Password must be at least 8 characters.")
+    .max(72, "Password must be 72 characters or less."),
 
   referralCode: z
     .string()
-    .trim()
-    .max(50)
     .optional()
-    .or(z.literal("")),
+    .default("")
+    .transform(normalizeReferralCode)
+    .refine(
+      (value) => value === "" || /^[A-Z0-9]+$/.test(value),
+      {
+        message: "Invalid referral code.",
+      }
+    ),
 });

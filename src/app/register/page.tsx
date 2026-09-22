@@ -273,7 +273,12 @@ const router = useRouter();
 
     <input
       required
-      type="text"
+  type="text"
+  name="username"
+  autoComplete="username"
+  autoCapitalize="none"
+  autoCorrect="off"
+  spellCheck={false}
       value={username}
       onChange={(event) =>
         setUsername(event.target.value)
@@ -296,8 +301,11 @@ const router = useRouter();
                     />
 
                     <input
-                      required
+                       required
   type="text"
+  name="name"
+  autoComplete="name"
+  autoCapitalize="words"
   value={name}
   onChange={(event) =>
     setName(event.target.value)
@@ -324,8 +332,14 @@ const router = useRouter();
                     />
 
                     <input
-                       required
+                        required
   type="email"
+  name="email"
+  autoComplete="email"
+  inputMode="email"
+  autoCapitalize="none"
+  autoCorrect="off"
+  spellCheck={false}
   value={email}
   onChange={(event) =>
     setEmail(event.target.value)
@@ -352,9 +366,10 @@ const router = useRouter();
                     />
 
                     <input
-                      required
+                     required
   type={showPassword ? "text" : "password"}
-  value={password}
+  name="password"
+  autoComplete="new-password"
   onChange={(event) =>
     setPassword(event.target.value)
   }
@@ -426,16 +441,23 @@ const router = useRouter();
                 ================================================== */}
 
                 <button
-                  type="submit"
-                  className="group flex h-[49px] w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#ff28a0] to-[#ed0072] text-[14px] font-black text-white shadow-[0_7px_18px_rgba(237,19,133,0.28)] transition hover:-translate-y-[1px] hover:shadow-[0_10px_22px_rgba(237,19,133,0.34)] active:translate-y-0"
-                >
-                  <span>Create Account</span>
+  type="submit"
+  disabled={loading}
+  className="group flex h-[49px] w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#ff28a0] to-[#ed0072] text-[14px] font-black text-white shadow-[0_7px_18px_rgba(237,19,133,0.28)] transition hover:-translate-y-[1px] hover:shadow-[0_10px_22px_rgba(237,19,133,0.34)] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
+>
+  <span>
+    {loading
+      ? "Creating Account..."
+      : "Create Account"}
+  </span>
 
-                  <ArrowRight
-                    size={17}
-                    className="transition-transform group-hover:translate-x-1"
-                  />
-                </button>
+  {!loading && (
+    <ArrowRight
+      size={17}
+      className="transition-transform group-hover:translate-x-1"
+    />
+  )}
+</button>
               </form>
 
               {/* =================================================
