@@ -13,9 +13,7 @@ export default async function AdminLayout({
     redirect("/login");
   }
 
-  /*
-   * Normal users cannot enter the admin panel.
-   */
+  // Normal users cannot enter the admin panel.
   if (user.role !== "ADMIN") {
     redirect("/dashboard");
   }
@@ -24,7 +22,7 @@ export default async function AdminLayout({
     <div className="min-h-screen bg-[#f8fafc]">
       <AdminSidebar />
 
-      <main className="lg:ml-[250px] min-h-screen">
+      <main className="min-h-screen pt-16 lg:ml-[250px] lg:pt-0">
         {children}
       </main>
     </div>
