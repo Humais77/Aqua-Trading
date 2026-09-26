@@ -30,14 +30,16 @@ enum UserRole {
 }
 
 model Deposit {
-  id            Uuid          @id @default(uuid())
-  userId        Uuid
-  amount        Decimal
-  method        DepositMethod
-  reference     String        @unique
-  status        DepositStatus @default(PENDING)
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @default(now())
+  id                   Uuid          @id @default(uuid())
+  userId               Uuid
+  amount               Decimal
+  method               DepositMethod
+  reference            String        @unique
+  transactionReference String?       @unique
+  proofUrl             String?
+  status               DepositStatus @default(PENDING)
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @default(now())
 
   user User @relation(fields: [userId], references: [id])
 
@@ -77,4 +79,15 @@ model Plan {
   updatedAt    DateTime @default(now())
 
   @@index([isActive])
+}
+
+model PaymentDetail {
+  id            Uuid          @id @default(uuid())
+  method        DepositMethod @unique
+  title         String
+  accountTitle  String
+  accountNumber String
+  instructions  String?
+  enabled       Boolean       @default(true)
+  updatedAt     DateTime      @default(now())
 }

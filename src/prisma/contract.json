@@ -8,6 +8,10 @@
       "model": "Deposit",
       "namespace": "public"
     },
+    "paymentDetail": {
+      "model": "PaymentDetail",
+      "namespace": "public"
+    },
     "plan": {
       "model": "Plan",
       "namespace": "public"
@@ -110,6 +114,13 @@
                   "plane": "domain"
                 }
               },
+              "proofUrl": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "reference": {
                 "nullable": false,
                 "type": {
@@ -128,6 +139,13 @@
                   "entityName": "DepositStatus",
                   "namespaceId": "public",
                   "plane": "domain"
+                }
+              },
+              "transactionReference": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
                 }
               },
               "updatedAt": {
@@ -177,11 +195,17 @@
                 "method": {
                   "column": "method"
                 },
+                "proofUrl": {
+                  "column": "proofUrl"
+                },
                 "reference": {
                   "column": "reference"
                 },
                 "status": {
                   "column": "status"
+                },
+                "transactionReference": {
+                  "column": "transactionReference"
                 },
                 "updatedAt": {
                   "column": "updatedAt"
@@ -192,6 +216,103 @@
               },
               "namespaceId": "public",
               "table": "deposit"
+            }
+          },
+          "PaymentDetail": {
+            "fields": {
+              "accountNumber": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "accountTitle": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "enabled": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "instructions": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "method": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "DepositMethod",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "title": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "accountNumber": {
+                  "column": "accountNumber"
+                },
+                "accountTitle": {
+                  "column": "accountTitle"
+                },
+                "enabled": {
+                  "column": "enabled"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "instructions": {
+                  "column": "instructions"
+                },
+                "method": {
+                  "column": "method"
+                },
+                "title": {
+                  "column": "title"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "paymentDetail"
             }
           },
           "Plan": {
@@ -572,6 +693,11 @@
                     "plane": "storage"
                   }
                 },
+                "proofUrl": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "reference": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -591,6 +717,11 @@
                     "namespaceId": "public",
                     "plane": "storage"
                   }
+                },
+                "transactionReference": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
                 },
                 "updatedAt": {
                   "codecId": "pg/timestamptz-temporal@1",
@@ -652,6 +783,90 @@
                 {
                   "columns": [
                     "reference"
+                  ]
+                },
+                {
+                  "columns": [
+                    "transactionReference"
+                  ]
+                }
+              ]
+            },
+            "paymentDetail": {
+              "checks": [
+                {
+                  "expression": "\"method\" IN ('BANK_TRANSFER', 'EASYPAISA', 'JAZZCASH', 'RAAST')",
+                  "name": "paymentDetail_method_check_5c8e9670",
+                  "prefix": "paymentDetail_method_check"
+                }
+              ],
+              "columns": {
+                "accountNumber": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "accountTitle": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "enabled": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": false
+                },
+                "instructions": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "method": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "DepositMethod",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "title": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "method"
                   ]
                 }
               ]
@@ -939,10 +1154,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "17b84b7f5a973c2cfa00d5b20c2ff3210279fdf268c6526c9d2391778d5ec060"
+    "storageHash": "8beb348b0232cc40586588713ef4c94fe3a03cbfa62f206009b4f49812be38ff"
   },
   "execution": {
-    "executionHash": "5f34df4e10438a5a5adc1cd3c62b9e0ee6707ecdf56e9cdb1a44de1006969a6c",
+    "executionHash": "8f1f5a6af25e6b31dd028db4eb50d662ccc2ed4c64ea66c0c9355f8bd4b5a4bf",
     "mutations": {
       "defaults": [
         {
@@ -954,6 +1169,17 @@
             "column": "id",
             "namespace": "public",
             "table": "deposit"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "paymentDetail"
           }
         },
         {

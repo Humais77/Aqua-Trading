@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-
 import { db } from "@/src/prisma/db";
 import { requireAdmin } from "@/src/lib/auth";
 
@@ -19,17 +18,32 @@ export async function GET() {
       );
     }
 
-    const users = await db.orm.public.User.all();
-    const deposits = await db.orm.public.Deposit.all();
-    const plans = await db.orm.public.Plan.all();
+    const users =
+      await db.orm.public.User.all();
 
-    const pendingDeposits = deposits.filter(
-      (deposit) => deposit.status === "PENDING"
-    ).length;
+    const deposits =
+      await db.orm.public.Deposit.all();
 
-    const approvedDeposits = deposits.filter(
-      (deposit) => deposit.status === "APPROVED"
-    );
+    const plans =
+      await db.orm.public.Plan.all();
+
+    const pendingDeposits =
+      deposits.filter(
+        (deposit) =>
+          deposit.status === "PENDING"
+      ).length;
+
+    const approvedDeposits =
+      deposits.filter(
+        (deposit) =>
+          deposit.status === "APPROVED"
+      );
+
+    const rejectedDeposits =
+      deposits.filter(
+        (deposit) =>
+          deposit.status === "REJECTED"
+      );
 
     const approvedDepositAmount =
       approvedDeposits.reduce(
@@ -38,23 +52,52 @@ export async function GET() {
         0
       );
 
+    const pendingDepositAmount =
+      deposits
+        .filter(
+          (deposit) =>
+            deposit.status === "PENDING"
+        )
+        .reduce(
+          (total, deposit) =>
+            total + Number(deposit.amount),
+          0
+        );
+
     return NextResponse.json({
       success: true,
+
       stats: {
         users: users.length,
+
         plans: plans.length,
+
         deposits: deposits.length,
+
         pendingDeposits,
+
+        approvedDeposits:
+          approvedDeposits.length,
+
+        rejectedDeposits:
+          rejectedDeposits.length,
+
         approvedDepositAmount,
+
+        pendingDepositAmount,
       },
     });
   } catch (error) {
-    console.error("ADMIN_DASHBOARD_ERROR:", error);
+    console.error(
+      "ADMIN_DASHBOARD_ERROR:",
+      error
+    );
 
     return NextResponse.json(
       {
         success: false,
-        message: "Unable to load dashboard.",
+        message:
+          "Unable to load dashboard.",
       },
       { status: 500 }
     );

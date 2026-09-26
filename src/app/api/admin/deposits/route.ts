@@ -12,54 +12,100 @@ export async function GET() {
     if (!admin) {
       return NextResponse.json(
         {
-          success: false,
-          message: "Admin access required.",
+          message: "Forbidden.",
         },
         { status: 403 }
       );
     }
 
-    const deposits = await db.orm.public.Deposit
-      .orderBy((deposit) => deposit.createdAt.desc())
-      .all();
+    const deposits =
+      await db.orm.public.Deposit.all();
 
-    const result = [];
+    const users =
+      await db.orm.public.User.all();
 
-    for (const deposit of deposits) {
-      const user =
-        await db.orm.public.User.first({
-          id: deposit.userId,
-        });
+    const userMap = new Map(
+      users.map((user) => [
+        user.id,
+        user,
+      ])
+    );
 
-      result.push({
-        id: deposit.id,
-        userId: deposit.userId,
-        user: user
-          ? {
-              fullName: user.fullName,
-              username: user.username,
-              email: user.email,
-            }
-          : null,
-        amount: Number(deposit.amount),
-        method: deposit.method,
-        reference: deposit.reference,
-        status: deposit.status,
-        createdAt: deposit.createdAt.toString(),
+    const result = deposits
+      .sort(
+        (a, b) =>
+         new Date(String(b.createdAt)).getTime() -
+          new Date(String(a.createdAt)).getTime()
+      )
+      .map((deposit) => {
+        const user =
+          userMap.get(deposit.userId);
+
+        return {
+          id: deposit.id,
+          userId: deposit.userId,
+
+          amount: Number(
+            deposit.amount
+          ),
+
+          method: deposit.method,
+
+          reference:
+            deposit.reference,
+
+          transactionReference:
+            deposit.transactionReference ??
+            null,
+
+          proofUrl:
+            deposit.proofUrl ?? null,
+
+          verificationType:
+            deposit.proofUrl
+              ? "SCREENSHOT"
+              : deposit.transactionReference
+              ? "TRANSACTION_ID"
+              : null,
+
+          status: deposit.status,
+
+          createdAt:
+            deposit.createdAt,
+
+          updatedAt:
+            deposit.updatedAt,
+
+          user: user
+            ? {
+                id: user.id,
+                fullName:
+                  user.fullName,
+                username:
+                  user.username,
+                email: user.email,
+                balance: Number(
+                  user.balance
+                ),
+              }
+            : null,
+        };
       });
-    }
 
     return NextResponse.json({
       success: true,
       deposits: result,
     });
   } catch (error) {
-    console.error("ADMIN_DEPOSITS_ERROR:", error);
+    console.error(
+      "ADMIN_DEPOSITS_GET_ERROR:",
+      error
+    );
 
     return NextResponse.json(
       {
-        success: false,
-        message: "Unable to load deposits.",
+        message:
+          "Unable to load deposits.",
       },
       { status: 500 }
     );

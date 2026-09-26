@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-
 import { db } from "@/src/prisma/db";
 import { getCurrentUser } from "@/src/lib/auth";
 
@@ -15,21 +14,16 @@ export async function GET() {
           success: false,
           message: "You must be logged in.",
         },
-        {
-          status: 401,
-        }
+        { status: 401 }
       );
     }
 
-    const deposits =
-      await db.orm.public.Deposit
-        .where({
-          userId: user.id,
-        })
-        .orderBy((deposit) =>
-          deposit.createdAt.desc()
-        )
-        .all();
+    const deposits = await db.orm.public.Deposit
+      .where({
+        userId: user.id,
+      })
+      .orderBy((deposit) => deposit.createdAt.desc())
+      .all();
 
     return NextResponse.json({
       success: true,
@@ -38,8 +32,10 @@ export async function GET() {
         amount: Number(deposit.amount),
         method: deposit.method,
         reference: deposit.reference,
+        transactionReference: deposit.transactionReference,
+        proofUrl: deposit.proofUrl,
         status: deposit.status,
-        createdAt: deposit.createdAt.toString(),
+        createdAt: deposit.createdAt,
       })),
     });
   } catch (error) {
@@ -48,12 +44,9 @@ export async function GET() {
     return NextResponse.json(
       {
         success: false,
-        message:
-          "Unable to load deposit history.",
+        message: "Unable to load deposit history.",
       },
-      {
-        status: 500,
-      }
+      { status: 500 }
     );
   }
 }
