@@ -111,6 +111,9 @@ export default function DashboardDeposit() {
 
   const [proofName, setProofName] = useState("");
 
+  const [selectedProof, setSelectedProof] =
+    useState<string | null>(null);
+
   const [deposits, setDeposits] =
     useState<Deposit[]>([]);
 
@@ -128,6 +131,7 @@ export default function DashboardDeposit() {
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
   const [latestReference, setLatestReference] =
     useState("");
 
@@ -215,6 +219,7 @@ export default function DashboardDeposit() {
       setError(
         "Please upload an image screenshot."
       );
+
       event.target.value = "";
       return;
     }
@@ -223,6 +228,7 @@ export default function DashboardDeposit() {
       setError(
         "Screenshot must be smaller than 5 MB."
       );
+
       event.target.value = "";
       return;
     }
@@ -238,6 +244,7 @@ export default function DashboardDeposit() {
         setError(
           "Screenshot is still too large. Please choose a smaller image."
         );
+
         event.target.value = "";
         return;
       }
@@ -248,6 +255,8 @@ export default function DashboardDeposit() {
       setError(
         "Unable to process the screenshot."
       );
+
+      event.target.value = "";
     }
   }
 
@@ -263,6 +272,28 @@ export default function DashboardDeposit() {
     if (input) {
       input.value = "";
     }
+  }
+
+  function getProofImageUrl(
+    value: string
+  ): string {
+    if (value.startsWith("data:image/")) {
+      return value;
+    }
+
+    return value;
+  }
+
+  function openProof(
+    value: string
+  ) {
+    setSelectedProof(
+      getProofImageUrl(value)
+    );
+  }
+
+  function closeProof() {
+    setSelectedProof(null);
   }
 
   async function handleSubmit(
@@ -283,6 +314,7 @@ export default function DashboardDeposit() {
       setError(
         "Minimum deposit amount is Rs. 310."
       );
+
       return;
     }
 
@@ -293,6 +325,7 @@ export default function DashboardDeposit() {
       setError(
         "Please enter your payment transaction ID."
       );
+
       return;
     }
 
@@ -303,6 +336,7 @@ export default function DashboardDeposit() {
       setError(
         "Transaction ID must contain at least 3 characters."
       );
+
       return;
     }
 
@@ -313,6 +347,7 @@ export default function DashboardDeposit() {
       setError(
         "Please upload your payment screenshot."
       );
+
       return;
     }
 
@@ -401,670 +436,753 @@ export default function DashboardDeposit() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Demo Notice */}
-      <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
-        <div className="flex items-start gap-3">
-          <AlertCircle
-            className="mt-0.5 shrink-0 text-amber-600"
-            size={20}
-          />
+    <>
+      <div className="space-y-6">
+        {/* Demo Notice */}
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
+          <div className="flex items-start gap-3">
+            <AlertCircle
+              className="mt-0.5 shrink-0 text-amber-600"
+              size={20}
+            />
 
-          <div>
-            <h3 className="font-bold text-amber-800">
-              Manual Payment Verification
-            </h3>
+            <div>
+              <h3 className="font-bold text-amber-800">
+                Manual Payment Verification
+              </h3>
 
-            <p className="mt-1 text-sm leading-6 text-amber-700">
-              After making your payment, submit either
-              your transaction ID or a screenshot of the
-              payment receipt. An admin will manually
-              verify the request before your balance is
-              credited.
-            </p>
+              <p className="mt-1 text-sm leading-6 text-amber-700">
+                After making your payment, submit either
+                your transaction ID or a screenshot of the
+                payment receipt. An admin will manually
+                verify the request before your balance is
+                credited.
+              </p>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Main */}
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
-        {/* Form */}
-        <div className="rounded-2xl border border-pink-100 bg-white p-5 shadow-[0_8px_30px_rgba(237,19,133,0.06)] sm:p-6">
-          <div className="mb-6">
-            <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-pink-50 text-[#ed1385]">
-              <ArrowDownToLine size={22} />
-            </div>
-
-            <h1 className="text-xl font-black text-slate-800">
-              Make a Deposit
-            </h1>
-
-            <p className="mt-1 text-sm text-slate-500">
-              Submit your payment for manual verification.
-            </p>
-          </div>
-
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-6"
-          >
-            {/* Amount */}
-            <div>
-              <label
-                htmlFor="deposit-amount"
-                className="mb-2 block text-sm font-bold text-slate-700"
-              >
-                Deposit Amount
-              </label>
-
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400">
-                  Rs.
-                </span>
-
-                <input
-                  id="deposit-amount"
-                  type="number"
-                  min="310"
-                  step="1"
-                  value={amount}
-                  onChange={(event) =>
-                    setAmount(event.target.value)
-                  }
-                  placeholder="Enter amount"
-                  inputMode="numeric"
-                  disabled={submitting}
-                  className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50 pl-12 pr-4 text-sm font-semibold text-slate-800 outline-none transition focus:border-[#ed1385] focus:bg-white focus:ring-4 focus:ring-pink-100 disabled:opacity-60"
-                />
+        {/* Main */}
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
+          {/* Form */}
+          <div className="rounded-2xl border border-pink-100 bg-white p-5 shadow-[0_8px_30px_rgba(237,19,133,0.06)] sm:p-6">
+            <div className="mb-6">
+              <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-pink-50 text-[#ed1385]">
+                <ArrowDownToLine size={22} />
               </div>
 
-              <p className="mt-2 text-xs text-slate-400">
-                Minimum deposit: Rs. 310
+              <h1 className="text-xl font-black text-slate-800">
+                Make a Deposit
+              </h1>
+
+              <p className="mt-1 text-sm text-slate-500">
+                Submit your payment for manual verification.
               </p>
             </div>
 
-            {/* Payment Methods */}
-            <div>
-              <label className="mb-3 block text-sm font-bold text-slate-700">
-                Payment Method
-              </label>
-
-              <div className="grid gap-3 sm:grid-cols-2">
-                {paymentMethods.map(
-                  (item) => {
-                    const Icon = item.icon;
-                    const selected =
-                      method === item.id;
-
-                    return (
-                      <button
-                        key={item.id}
-                        type="button"
-                        disabled={submitting}
-                        onClick={() =>
-                          setMethod(item.id)
-                        }
-                        className={`flex items-center gap-3 rounded-xl border p-4 text-left transition ${
-                          selected
-                            ? "border-[#ed1385] bg-pink-50"
-                            : "border-slate-200 bg-white hover:border-pink-200"
-                        } disabled:opacity-60`}
-                      >
-                        <div
-                          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${
-                            selected
-                              ? "bg-[#ed1385] text-white"
-                              : "bg-slate-100 text-slate-500"
-                          }`}
-                        >
-                          <Icon size={19} />
-                        </div>
-
-                        <div>
-                          <p className="text-sm font-bold text-slate-800">
-                            {item.title}
-                          </p>
-
-                          <p className="mt-0.5 text-[11px] text-slate-400">
-                            {item.description}
-                          </p>
-                        </div>
-                      </button>
-                    );
-                  }
-                )}
-              </div>
-            </div>
-
-            {/* Payment Details */}
-            <div className="rounded-xl border border-pink-200 bg-pink-50/50 p-4">
-              <div className="flex items-center justify-between gap-3">
-                <p className="text-xs font-black uppercase tracking-wider text-[#ed1385]">
-                  {paymentDetails?.title ??
-                    "Payment Details"}
-                </p>
-
-                {detailsLoading && (
-                  <Loader2
-                    size={15}
-                    className="animate-spin text-[#ed1385]"
-                  />
-                )}
-              </div>
-
-              {paymentDetails ? (
-                <div className="mt-4 space-y-3 text-sm">
-                  <DetailRow
-                    label="Account Title"
-                    value={
-                      paymentDetails.accountTitle
-                    }
-                  />
-
-                  <DetailRow
-                    label="Account Number"
-                    value={
-                      paymentDetails.accountNumber
-                    }
-                  />
-
-                  {paymentDetails.instructions && (
-                    <div className="border-t border-pink-100 pt-3">
-                      <p className="text-xs text-slate-400">
-                        Instructions
-                      </p>
-
-                      <p className="mt-1 whitespace-pre-line text-sm leading-6 font-medium text-slate-700">
-                        {
-                          paymentDetails.instructions
-                        }
-                      </p>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <p className="mt-3 text-sm text-slate-500">
-                  Payment details are currently unavailable.
-                </p>
-              )}
-            </div>
-
-            {/* Verification Choice */}
-            <div>
-              <label className="mb-3 block text-sm font-bold text-slate-700">
-                Payment Verification
-              </label>
-
-              <div className="grid gap-3 sm:grid-cols-2">
-                <button
-                  type="button"
-                  onClick={() =>
-                    setVerificationType(
-                      "TRANSACTION_ID"
-                    )
-                  }
-                  className={`rounded-xl border p-4 text-left transition ${
-                    verificationType ===
-                    "TRANSACTION_ID"
-                      ? "border-[#ed1385] bg-pink-50"
-                      : "border-slate-200 bg-white hover:border-pink-200"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`flex h-10 w-10 items-center justify-center rounded-lg ${
-                        verificationType ===
-                        "TRANSACTION_ID"
-                          ? "bg-[#ed1385] text-white"
-                          : "bg-slate-100 text-slate-500"
-                      }`}
-                    >
-                      <Copy size={18} />
-                    </div>
-
-                    <div>
-                      <p className="text-sm font-bold text-slate-800">
-                        Enter Transaction ID
-                      </p>
-
-                      <p className="mt-1 text-xs text-slate-400">
-                        Enter the payment reference.
-                      </p>
-                    </div>
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    setVerificationType(
-                      "SCREENSHOT"
-                    )
-                  }
-                  className={`rounded-xl border p-4 text-left transition ${
-                    verificationType ===
-                    "SCREENSHOT"
-                      ? "border-[#ed1385] bg-pink-50"
-                      : "border-slate-200 bg-white hover:border-pink-200"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`flex h-10 w-10 items-center justify-center rounded-lg ${
-                        verificationType ===
-                        "SCREENSHOT"
-                          ? "bg-[#ed1385] text-white"
-                          : "bg-slate-100 text-slate-500"
-                      }`}
-                    >
-                      <ImagePlus size={18} />
-                    </div>
-
-                    <div>
-                      <p className="text-sm font-bold text-slate-800">
-                        Upload Screenshot
-                      </p>
-
-                      <p className="mt-1 text-xs text-slate-400">
-                        Upload payment proof.
-                      </p>
-                    </div>
-                  </div>
-                </button>
-              </div>
-            </div>
-
-            {/* Transaction ID */}
-            {verificationType ===
-              "TRANSACTION_ID" && (
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-6"
+            >
+              {/* Amount */}
               <div>
                 <label
-                  htmlFor="transaction-reference"
+                  htmlFor="deposit-amount"
                   className="mb-2 block text-sm font-bold text-slate-700"
                 >
-                  Transaction / Payment ID
+                  Deposit Amount
                 </label>
 
-                <input
-                  id="transaction-reference"
-                  type="text"
-                  value={transactionReference}
-                  onChange={(event) =>
-                    setTransactionReference(
-                      event.target.value
-                    )
-                  }
-                  placeholder="e.g. TXN123456789"
-                  autoComplete="off"
-                  disabled={submitting}
-                  className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-800 outline-none transition focus:border-[#ed1385] focus:bg-white focus:ring-4 focus:ring-pink-100"
-                />
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400">
+                    Rs.
+                  </span>
+
+                  <input
+                    id="deposit-amount"
+                    type="number"
+                    min="310"
+                    step="1"
+                    value={amount}
+                    onChange={(event) =>
+                      setAmount(event.target.value)
+                    }
+                    placeholder="Enter amount"
+                    inputMode="numeric"
+                    disabled={submitting}
+                    className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50 pl-12 pr-4 text-sm font-semibold text-slate-800 outline-none transition focus:border-[#ed1385] focus:bg-white focus:ring-4 focus:ring-pink-100 disabled:opacity-60"
+                  />
+                </div>
 
                 <p className="mt-2 text-xs text-slate-400">
-                  Enter the transaction ID shown on your
-                  payment receipt.
+                  Minimum deposit: Rs. 310
                 </p>
               </div>
-            )}
 
-            {/* Screenshot */}
-            {verificationType ===
-              "SCREENSHOT" && (
+              {/* Payment Methods */}
               <div>
-                <label
-                  htmlFor="deposit-proof"
-                  className="mb-2 block text-sm font-bold text-slate-700"
-                >
-                  Payment Screenshot
+                <label className="mb-3 block text-sm font-bold text-slate-700">
+                  Payment Method
                 </label>
 
-                {!proofUrl ? (
-                  <label
-                    htmlFor="deposit-proof"
-                    className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-pink-200 bg-pink-50/40 px-5 py-8 text-center transition hover:border-[#ed1385] hover:bg-pink-50"
-                  >
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-[#ed1385] shadow-sm">
-                      <Upload size={21} />
-                    </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {paymentMethods.map(
+                    (item) => {
+                      const Icon = item.icon;
+                      const selected =
+                        method === item.id;
 
-                    <p className="mt-3 text-sm font-bold text-slate-700">
-                      Upload payment screenshot
-                    </p>
+                      return (
+                        <button
+                          key={item.id}
+                          type="button"
+                          disabled={submitting}
+                          onClick={() =>
+                            setMethod(item.id)
+                          }
+                          className={`flex items-center gap-3 rounded-xl border p-4 text-left transition ${
+                            selected
+                              ? "border-[#ed1385] bg-pink-50"
+                              : "border-slate-200 bg-white hover:border-pink-200"
+                          } disabled:opacity-60`}
+                        >
+                          <div
+                            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${
+                              selected
+                                ? "bg-[#ed1385] text-white"
+                                : "bg-slate-100 text-slate-500"
+                            }`}
+                          >
+                            <Icon size={19} />
+                          </div>
 
-                    <p className="mt-1 text-xs text-slate-400">
-                      PNG, JPG or WEBP • Max 5 MB
-                    </p>
+                          <div>
+                            <p className="text-sm font-bold text-slate-800">
+                              {item.title}
+                            </p>
 
-                    <input
-                      id="deposit-proof"
-                      type="file"
-                      accept="image/png,image/jpeg,image/webp"
-                      onChange={
-                        handleProofUpload
-                      }
-                      className="hidden"
-                      disabled={submitting}
+                            <p className="mt-0.5 text-[11px] text-slate-400">
+                              {item.description}
+                            </p>
+                          </div>
+                        </button>
+                      );
+                    }
+                  )}
+                </div>
+              </div>
+
+              {/* Payment Details */}
+              <div className="rounded-xl border border-pink-200 bg-pink-50/50 p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-xs font-black uppercase tracking-wider text-[#ed1385]">
+                    {paymentDetails?.title ??
+                      "Payment Details"}
+                  </p>
+
+                  {detailsLoading && (
+                    <Loader2
+                      size={15}
+                      className="animate-spin text-[#ed1385]"
                     />
-                  </label>
-                ) : (
-                  <div className="overflow-hidden rounded-xl border border-pink-200 bg-slate-50">
-                    <div className="relative">
-                      <img
-                        src={proofUrl}
-                        alt="Payment proof preview"
-                        className="max-h-[360px] w-full object-contain"
-                      />
+                  )}
+                </div>
 
-                      <button
-                        type="button"
-                        onClick={removeProof}
-                        disabled={submitting}
-                        className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white text-red-500 shadow-md hover:bg-red-50"
-                      >
-                        <X size={17} />
-                      </button>
-                    </div>
+                {paymentDetails ? (
+                  <div className="mt-4 space-y-3 text-sm">
+                    <DetailRow
+                      label="Account Title"
+                      value={
+                        paymentDetails.accountTitle
+                      }
+                    />
 
-                    <div className="border-t border-slate-200 bg-white px-4 py-3">
-                      <p className="truncate text-xs font-bold text-slate-700">
-                        {proofName}
-                      </p>
+                    <DetailRow
+                      label="Account Number"
+                      value={
+                        paymentDetails.accountNumber
+                      }
+                    />
 
-                      <p className="mt-1 text-xs text-green-600">
-                        Screenshot ready for submission.
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
+                    {paymentDetails.instructions && (
+                      <div className="border-t border-pink-100 pt-3">
+                        <p className="text-xs text-slate-400">
+                          Instructions
+                        </p>
 
-            {/* Messages */}
-            {error && (
-              <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
-                {error}
-              </div>
-            )}
-
-            {success && (
-              <div className="rounded-xl border border-green-200 bg-green-50 px-4 py-3">
-                <div className="flex items-start gap-3">
-                  <CheckCircle2
-                    className="mt-0.5 shrink-0 text-green-600"
-                    size={18}
-                  />
-
-                  <div>
-                    <p className="text-sm font-bold text-green-700">
-                      {success}
-                    </p>
-
-                    {latestReference && (
-                      <p className="mt-1 text-xs text-green-600">
-                        Deposit Reference:{" "}
-                        <span className="font-bold">
-                          {latestReference}
-                        </span>
-                      </p>
+                        <p className="mt-1 whitespace-pre-line text-sm leading-6 font-medium text-slate-700">
+                          {
+                            paymentDetails.instructions
+                          }
+                        </p>
+                      </div>
                     )}
                   </div>
+                ) : (
+                  <p className="mt-3 text-sm text-slate-500">
+                    Payment details are currently unavailable.
+                  </p>
+                )}
+              </div>
+
+              {/* Verification Choice */}
+              <div>
+                <label className="mb-3 block text-sm font-bold text-slate-700">
+                  Payment Verification
+                </label>
+
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setVerificationType(
+                        "TRANSACTION_ID"
+                      )
+                    }
+                    className={`rounded-xl border p-4 text-left transition ${
+                      verificationType ===
+                      "TRANSACTION_ID"
+                        ? "border-[#ed1385] bg-pink-50"
+                        : "border-slate-200 bg-white hover:border-pink-200"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`flex h-10 w-10 items-center justify-center rounded-lg ${
+                          verificationType ===
+                          "TRANSACTION_ID"
+                            ? "bg-[#ed1385] text-white"
+                            : "bg-slate-100 text-slate-500"
+                        }`}
+                      >
+                        <Copy size={18} />
+                      </div>
+
+                      <div>
+                        <p className="text-sm font-bold text-slate-800">
+                          Enter Transaction ID
+                        </p>
+
+                        <p className="mt-1 text-xs text-slate-400">
+                          Enter the payment reference.
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setVerificationType(
+                        "SCREENSHOT"
+                      )
+                    }
+                    className={`rounded-xl border p-4 text-left transition ${
+                      verificationType ===
+                      "SCREENSHOT"
+                        ? "border-[#ed1385] bg-pink-50"
+                        : "border-slate-200 bg-white hover:border-pink-200"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`flex h-10 w-10 items-center justify-center rounded-lg ${
+                          verificationType ===
+                          "SCREENSHOT"
+                            ? "bg-[#ed1385] text-white"
+                            : "bg-slate-100 text-slate-500"
+                        }`}
+                      >
+                        <ImagePlus size={18} />
+                      </div>
+
+                      <div>
+                        <p className="text-sm font-bold text-slate-800">
+                          Upload Screenshot
+                        </p>
+
+                        <p className="mt-1 text-xs text-slate-400">
+                          Upload payment proof.
+                        </p>
+                      </div>
+                    </div>
+                  </button>
                 </div>
               </div>
-            )}
 
-            {/* Submit */}
-            <button
-              type="submit"
-              disabled={submitting}
-              className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#ff1590] to-[#ed1385] px-5 text-sm font-bold text-white shadow-[0_8px_20px_rgba(237,19,133,0.22)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {submitting ? (
-                <>
-                  <Loader2
-                    size={18}
-                    className="animate-spin"
-                  />
-                  Submitting Request...
-                </>
-              ) : (
-                <>
-                  <ArrowDownToLine size={18} />
-                  Submit Deposit Request
-                </>
-              )}
-            </button>
-          </form>
-        </div>
+              {/* Transaction ID */}
+              {verificationType ===
+                "TRANSACTION_ID" && (
+                <div>
+                  <label
+                    htmlFor="transaction-reference"
+                    className="mb-2 block text-sm font-bold text-slate-700"
+                  >
+                    Transaction / Payment ID
+                  </label>
 
-        {/* Information */}
-        <div className="rounded-2xl border border-pink-100 bg-white p-5 shadow-[0_8px_30px_rgba(237,19,133,0.06)] sm:p-6">
-          <h2 className="text-lg font-black text-slate-800">
-            How It Works
-          </h2>
-
-          <div className="mt-6 space-y-4">
-            <Step
-              number="1"
-              title="Make Payment"
-              text="Send the amount using the payment details shown above."
-            />
-
-            <Step
-              number="2"
-              title="Provide Proof"
-              text="Enter your transaction ID or upload a payment screenshot."
-            />
-
-            <Step
-              number="3"
-              title="Admin Verification"
-              text="An admin reviews your payment information."
-            />
-
-            <Step
-              number="4"
-              title="Balance Credit"
-              text="Approved deposits are automatically added to your balance."
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* History */}
-      <div className="rounded-2xl border border-pink-100 bg-white shadow-[0_8px_30px_rgba(237,19,133,0.06)]">
-        <div className="border-b border-pink-100 p-5 sm:p-6">
-          <h2 className="text-lg font-black text-slate-800">
-            Deposit History
-          </h2>
-
-          <p className="mt-1 text-sm text-slate-500">
-            Track your deposit requests and verification status.
-          </p>
-        </div>
-
-        {loading ? (
-          <div className="flex items-center justify-center gap-2 p-10 text-sm text-slate-400">
-            <Loader2
-              size={18}
-              className="animate-spin"
-            />
-            Loading deposit history...
-          </div>
-        ) : deposits.length === 0 ? (
-          <div className="p-10 text-center">
-            <p className="text-sm font-bold text-slate-700">
-              No deposits yet
-            </p>
-          </div>
-        ) : (
-          <>
-            <div className="divide-y divide-slate-100 md:hidden">
-              {deposits.map((deposit) => (
-                <div
-                  key={deposit.id}
-                  className="space-y-4 p-5"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-xs text-slate-400">
-                        Amount
-                      </p>
-
-                      <p className="mt-1 text-lg font-black text-slate-800">
-                        Rs.{" "}
-                        {deposit.amount.toLocaleString()}
-                      </p>
-                    </div>
-
-                    <DepositStatus
-                      status={deposit.status}
-                    />
-                  </div>
-
-                  <InfoRow
-                    label="Date"
-                    value={new Date(
-                      deposit.createdAt
-                    ).toLocaleDateString()}
-                  />
-
-                  <InfoRow
-                    label="Method"
-                    value={methodLabels[deposit.method]}
-                  />
-
-                  <InfoRow
-                    label="Verification"
-                    value={
-                      deposit.proofUrl
-                        ? "Screenshot"
-                        : deposit.transactionReference
-                        ? "Transaction ID"
-                        : "Not provided"
+                  <input
+                    id="transaction-reference"
+                    type="text"
+                    value={transactionReference}
+                    onChange={(event) =>
+                      setTransactionReference(
+                        event.target.value
+                      )
                     }
+                    placeholder="e.g. TXN123456789"
+                    autoComplete="off"
+                    disabled={submitting}
+                    className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-800 outline-none transition focus:border-[#ed1385] focus:bg-white focus:ring-4 focus:ring-pink-100"
                   />
 
-                  {deposit.transactionReference && (
-                    <InfoRow
-                      label="Transaction ID"
-                      value={
-                        deposit.transactionReference
-                      }
-                    />
-                  )}
+                  <p className="mt-2 text-xs text-slate-400">
+                    Enter the transaction ID shown on your
+                    payment receipt.
+                  </p>
+                </div>
+              )}
 
-                  <InfoRow
-                    label="Deposit Reference"
-                    value={deposit.reference}
-                  />
+              {/* Screenshot */}
+              {verificationType ===
+                "SCREENSHOT" && (
+                <div>
+                  <label
+                    htmlFor="deposit-proof"
+                    className="mb-2 block text-sm font-bold text-slate-700"
+                  >
+                    Payment Screenshot
+                  </label>
 
-                  {deposit.proofUrl && (
-                    <a
-                      href={deposit.proofUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-xs font-bold text-[#ed1385]"
+                  {!proofUrl ? (
+                    <label
+                      htmlFor="deposit-proof"
+                      className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-pink-200 bg-pink-50/40 px-5 py-8 text-center transition hover:border-[#ed1385] hover:bg-pink-50"
                     >
-                      View Submitted Screenshot
-                      <ExternalLink size={13} />
-                    </a>
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-[#ed1385] shadow-sm">
+                        <Upload size={21} />
+                      </div>
+
+                      <p className="mt-3 text-sm font-bold text-slate-700">
+                        Upload payment screenshot
+                      </p>
+
+                      <p className="mt-1 text-xs text-slate-400">
+                        PNG, JPG or WEBP • Max 5 MB
+                      </p>
+
+                      <input
+                        id="deposit-proof"
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp"
+                        onChange={
+                          handleProofUpload
+                        }
+                        className="hidden"
+                        disabled={submitting}
+                      />
+                    </label>
+                  ) : (
+                    <div className="overflow-hidden rounded-xl border border-pink-200 bg-slate-50">
+                      <div className="relative">
+                        <img
+                          src={proofUrl}
+                          alt="Payment proof preview"
+                          className="max-h-[360px] w-full object-contain"
+                        />
+
+                        <button
+                          type="button"
+                          onClick={removeProof}
+                          disabled={submitting}
+                          className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white text-red-500 shadow-md hover:bg-red-50"
+                        >
+                          <X size={17} />
+                        </button>
+                      </div>
+
+                      <div className="border-t border-slate-200 bg-white px-4 py-3">
+                        <p className="truncate text-xs font-bold text-slate-700">
+                          {proofName}
+                        </p>
+
+                        <p className="mt-1 text-xs text-green-600">
+                          Screenshot ready for submission.
+                        </p>
+                      </div>
+                    </div>
                   )}
                 </div>
-              ))}
+              )}
+
+              {/* Messages */}
+              {error && (
+                <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
+                  {error}
+                </div>
+              )}
+
+              {success && (
+                <div className="rounded-xl border border-green-200 bg-green-50 px-4 py-3">
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2
+                      className="mt-0.5 shrink-0 text-green-600"
+                      size={18}
+                    />
+
+                    <div>
+                      <p className="text-sm font-bold text-green-700">
+                        {success}
+                      </p>
+
+                      {latestReference && (
+                        <p className="mt-1 text-xs text-green-600">
+                          Deposit Reference:{" "}
+                          <span className="font-bold">
+                            {latestReference}
+                          </span>
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Submit */}
+              <button
+                type="submit"
+                disabled={submitting}
+                className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#ff1590] to-[#ed1385] px-5 text-sm font-bold text-white shadow-[0_8px_20px_rgba(237,19,133,0.22)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {submitting ? (
+                  <>
+                    <Loader2
+                      size={18}
+                      className="animate-spin"
+                    />
+                    Submitting Request...
+                  </>
+                ) : (
+                  <>
+                    <ArrowDownToLine size={18} />
+                    Submit Deposit Request
+                  </>
+                )}
+              </button>
+            </form>
+          </div>
+
+          {/* Information */}
+          <div className="rounded-2xl border border-pink-100 bg-white p-5 shadow-[0_8px_30px_rgba(237,19,133,0.06)] sm:p-6">
+            <h2 className="text-lg font-black text-slate-800">
+              How It Works
+            </h2>
+
+            <div className="mt-6 space-y-4">
+              <Step
+                number="1"
+                title="Make Payment"
+                text="Send the amount using the payment details shown above."
+              />
+
+              <Step
+                number="2"
+                title="Provide Proof"
+                text="Enter your transaction ID or upload a payment screenshot."
+              />
+
+              <Step
+                number="3"
+                title="Admin Verification"
+                text="An admin reviews your payment information."
+              />
+
+              <Step
+                number="4"
+                title="Balance Credit"
+                text="Approved deposits are automatically added to your balance."
+              />
             </div>
+          </div>
+        </div>
 
-            <div className="hidden overflow-x-auto md:block">
-              <table className="w-full min-w-[950px]">
-                <thead>
-                  <tr className="border-b border-slate-100 bg-slate-50/70">
-                    <TableHeader>Date</TableHeader>
-                    <TableHeader>Amount</TableHeader>
-                    <TableHeader>Method</TableHeader>
-                    <TableHeader>Verification</TableHeader>
-                    <TableHeader>Reference</TableHeader>
-                    <TableHeader>Proof</TableHeader>
-                    <TableHeader>Status</TableHeader>
-                  </tr>
-                </thead>
+        {/* History */}
+        <div className="rounded-2xl border border-pink-100 bg-white shadow-[0_8px_30px_rgba(237,19,133,0.06)]">
+          <div className="border-b border-pink-100 p-5 sm:p-6">
+            <h2 className="text-lg font-black text-slate-800">
+              Deposit History
+            </h2>
 
-                <tbody>
-                  {deposits.map((deposit) => (
-                    <tr
-                      key={deposit.id}
-                      className="border-b border-slate-100 last:border-0"
-                    >
-                      <td className="px-5 py-4 text-sm text-slate-500">
-                        {new Date(
-                          deposit.createdAt
-                        ).toLocaleDateString()}
-                      </td>
+            <p className="mt-1 text-sm text-slate-500">
+              Track your deposit requests and verification status.
+            </p>
+          </div>
 
-                      <td className="px-5 py-4 text-sm font-bold text-slate-800">
-                        Rs.{" "}
-                        {deposit.amount.toLocaleString()}
-                      </td>
+          {loading ? (
+            <div className="flex items-center justify-center gap-2 p-10 text-sm text-slate-400">
+              <Loader2
+                size={18}
+                className="animate-spin"
+              />
+              Loading deposit history...
+            </div>
+          ) : deposits.length === 0 ? (
+            <div className="p-10 text-center">
+              <p className="text-sm font-bold text-slate-700">
+                No deposits yet
+              </p>
+            </div>
+          ) : (
+            <>
+              {/* Mobile History */}
+              <div className="divide-y divide-slate-100 md:hidden">
+                {deposits.map((deposit) => (
+                  <div
+                    key={deposit.id}
+                    className="space-y-4 p-5"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-xs text-slate-400">
+                          Amount
+                        </p>
 
-                      <td className="px-5 py-4 text-sm text-slate-600">
-                        {methodLabels[deposit.method]}
-                      </td>
+                        <p className="mt-1 text-lg font-black text-slate-800">
+                          Rs.{" "}
+                          {deposit.amount.toLocaleString()}
+                        </p>
+                      </div>
 
-                      <td className="px-5 py-4 text-xs font-semibold text-slate-600">
-                        {deposit.proofUrl
+                      <DepositStatus
+                        status={deposit.status}
+                      />
+                    </div>
+
+                    <InfoRow
+                      label="Date"
+                      value={new Date(
+                        deposit.createdAt
+                      ).toLocaleDateString()}
+                    />
+
+                    <InfoRow
+                      label="Method"
+                      value={methodLabels[deposit.method]}
+                    />
+
+                    <InfoRow
+                      label="Verification"
+                      value={
+                        deposit.proofUrl
                           ? "Screenshot"
                           : deposit.transactionReference
                           ? "Transaction ID"
-                          : "—"}
-                      </td>
+                          : "Not provided"
+                      }
+                    />
 
-                      <td className="px-5 py-4">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            copyReference(
-                              deposit.reference
-                            )
-                          }
-                          className="flex items-center gap-2 text-xs font-bold text-[#ed1385]"
-                        >
-                          {deposit.reference}
-                          <Copy size={13} />
-                        </button>
-                      </td>
+                    {deposit.transactionReference && (
+                      <InfoRow
+                        label="Transaction ID"
+                        value={
+                          deposit.transactionReference
+                        }
+                      />
+                    )}
 
-                      <td className="px-5 py-4">
-                        {deposit.proofUrl ? (
-                          <a
-                            href={deposit.proofUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 text-xs font-bold text-[#ed1385]"
-                          >
-                            View
-                            <ExternalLink size={13} />
-                          </a>
-                        ) : deposit.transactionReference ? (
-                          <span className="text-xs font-semibold text-slate-600">
-                            {deposit.transactionReference}
-                          </span>
-                        ) : (
-                          "—"
-                        )}
-                      </td>
+                    <InfoRow
+                      label="Deposit Reference"
+                      value={deposit.reference}
+                    />
 
-                      <td className="px-5 py-4">
-                        <DepositStatus
-                          status={deposit.status}
-                        />
-                      </td>
+                    {deposit.proofUrl && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          openProof(
+                            deposit.proofUrl!
+                          )
+                        }
+                        className="inline-flex items-center gap-2 text-xs font-bold text-[#ed1385]"
+                      >
+                        View Submitted Screenshot
+                        <ImagePlus size={13} />
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop History */}
+              <div className="hidden overflow-x-auto md:block">
+                <table className="w-full min-w-[950px]">
+                  <thead>
+                    <tr className="border-b border-slate-100 bg-slate-50/70">
+                      <TableHeader>
+                        Date
+                      </TableHeader>
+
+                      <TableHeader>
+                        Amount
+                      </TableHeader>
+
+                      <TableHeader>
+                        Method
+                      </TableHeader>
+
+                      <TableHeader>
+                        Verification
+                      </TableHeader>
+
+                      <TableHeader>
+                        Reference
+                      </TableHeader>
+
+                      <TableHeader>
+                        Proof
+                      </TableHeader>
+
+                      <TableHeader>
+                        Status
+                      </TableHeader>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </>
-        )}
+                  </thead>
+
+                  <tbody>
+                    {deposits.map((deposit) => (
+                      <tr
+                        key={deposit.id}
+                        className="border-b border-slate-100 last:border-0"
+                      >
+                        <td className="px-5 py-4 text-sm text-slate-500">
+                          {new Date(
+                            deposit.createdAt
+                          ).toLocaleDateString()}
+                        </td>
+
+                        <td className="px-5 py-4 text-sm font-bold text-slate-800">
+                          Rs.{" "}
+                          {deposit.amount.toLocaleString()}
+                        </td>
+
+                        <td className="px-5 py-4 text-sm text-slate-600">
+                          {methodLabels[
+                            deposit.method
+                          ]}
+                        </td>
+
+                        <td className="px-5 py-4 text-xs font-semibold text-slate-600">
+                          {deposit.proofUrl
+                            ? "Screenshot"
+                            : deposit.transactionReference
+                            ? "Transaction ID"
+                            : "—"}
+                        </td>
+
+                        <td className="px-5 py-4">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              copyReference(
+                                deposit.reference
+                              )
+                            }
+                            className="flex items-center gap-2 text-xs font-bold text-[#ed1385]"
+                          >
+                            {deposit.reference}
+                            <Copy size={13} />
+                          </button>
+                        </td>
+
+                        <td className="px-5 py-4">
+                          {deposit.proofUrl ? (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                openProof(
+                                  deposit.proofUrl!
+                                )
+                              }
+                              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#ed1385]"
+                            >
+                              View
+                              <ImagePlus
+                                size={13}
+                              />
+                            </button>
+                          ) : deposit.transactionReference ? (
+                            <span className="text-xs font-semibold text-slate-600">
+                              {
+                                deposit.transactionReference
+                              }
+                            </span>
+                          ) : (
+                            "—"
+                          )}
+                        </td>
+
+                        <td className="px-5 py-4">
+                          <DepositStatus
+                            status={deposit.status}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
+        </div>
       </div>
-    </div>
+
+      {/* Screenshot Preview Modal */}
+      {selectedProof && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4"
+          onClick={closeProof}
+        >
+          <div
+            className="relative w-full max-w-4xl overflow-hidden rounded-2xl bg-white p-3 shadow-2xl"
+            onClick={(event) =>
+              event.stopPropagation()
+            }
+          >
+            {/* Close */}
+            <button
+              type="button"
+              onClick={closeProof}
+              className="absolute right-5 top-5 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white text-slate-700 shadow-lg transition hover:bg-slate-100"
+              aria-label="Close screenshot"
+            >
+              <X size={20} />
+            </button>
+
+            {/* Image */}
+            <div className="flex max-h-[80vh] items-center justify-center overflow-auto rounded-xl bg-slate-100 p-2">
+              <img
+                src={selectedProof}
+                alt="Submitted payment proof"
+                className="max-h-[75vh] max-w-full rounded-lg object-contain"
+              />
+            </div>
+
+            {/* Open Image */}
+            <div className="flex justify-center pt-3">
+              <a
+                href={selectedProof}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-lg bg-[#ed1385] px-4 py-2 text-xs font-bold text-white transition hover:bg-pink-600"
+              >
+                Open Image
+                <ExternalLink size={14} />
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -1079,6 +1197,7 @@ function compressImage(
 
       image.onload = () => {
         const maxWidth = 1400;
+
         const scale = Math.min(
           1,
           maxWidth / image.width
@@ -1104,6 +1223,7 @@ function compressImage(
               "Unable to process image."
             )
           );
+
           return;
         }
 

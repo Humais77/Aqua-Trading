@@ -37,7 +37,37 @@ const depositSchema = z
     proofUrl: z
       .string()
       .trim()
-      .url("Invalid proof URL.")
+      .max(
+        3000000,
+        "Payment screenshot is too large."
+      )
+      .refine(
+        (value) => {
+          // Accept Base64 image data URLs.
+          if (
+            value.startsWith("data:image/jpeg;base64,") ||
+            value.startsWith("data:image/png;base64,") ||
+            value.startsWith("data:image/webp;base64,")
+          ) {
+            return true;
+          }
+
+          // Also allow normal HTTP/HTTPS URLs.
+          try {
+            const url = new URL(value);
+
+            return (
+              url.protocol === "http:" ||
+              url.protocol === "https:"
+            );
+          } catch {
+            return false;
+          }
+        },
+        {
+          message: "Invalid payment proof.",
+        }
+      )
       .optional()
       .nullable(),
   })
@@ -109,8 +139,10 @@ export async function POST(request: Request) {
     const normalizedProofUrl =
       proofUrl?.trim() || null;
 
-    // Prevent the same external transaction ID
-    // from being submitted more than once.
+    /*
+     * Prevent the same external transaction ID
+     * from being submitted more than once.
+     */
     if (normalizedTransactionReference) {
       const existingDeposit =
         await db.orm.public.Deposit.first({
@@ -130,7 +162,6 @@ export async function POST(request: Request) {
       }
     }
 
-    // Internal Aqua Trading reference.
     const depositReference =
       generateDepositReference();
 

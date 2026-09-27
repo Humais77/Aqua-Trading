@@ -34,8 +34,12 @@ export async function GET() {
     const result = deposits
       .sort(
         (a, b) =>
-         new Date(String(b.createdAt)).getTime() -
-          new Date(String(a.createdAt)).getTime()
+          new Date(
+            String(b.createdAt)
+          ).getTime() -
+          new Date(
+            String(a.createdAt)
+          ).getTime()
       )
       .map((deposit) => {
         const user =
@@ -58,6 +62,10 @@ export async function GET() {
             deposit.transactionReference ??
             null,
 
+          /*
+           * IMPORTANT:
+           * Keep the complete data URL.
+           */
           proofUrl:
             deposit.proofUrl ?? null,
 
@@ -65,8 +73,8 @@ export async function GET() {
             deposit.proofUrl
               ? "SCREENSHOT"
               : deposit.transactionReference
-              ? "TRANSACTION_ID"
-              : null,
+                ? "TRANSACTION_ID"
+                : null,
 
           status: deposit.status,
 
@@ -84,6 +92,7 @@ export async function GET() {
                 username:
                   user.username,
                 email: user.email,
+
                 balance: Number(
                   user.balance
                 ),
